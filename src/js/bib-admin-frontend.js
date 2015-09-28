@@ -73,11 +73,21 @@ $.bib.addEntity = function(entity, error)
 
     // add prefix to input 'id'
     for (i = 0; element = inputs[i++]; ) {
-        element.id = prefix + element.id;
+        if (element.id) {
+            element.id = prefix + element.id;
+        }
+    }
+    // add prefix to input 'name'
+    for (i = 0; element = inputs[i++]; ) {
+        if (element.getAttribute('name')) {
+            element.setAttribute('name', prefix + element.name);
+        }
     }
     // add prefix to label 'for'
     for (i = 0; element = labels[i++]; ) {
-        element.setAttribute('for', prefix + element.getAttribute('for'));
+        if (element.getAttribute('for')) {
+            element.setAttribute('for', prefix + element.getAttribute('for'));
+        }
     }
 
     // fill in form data from entity
@@ -198,6 +208,7 @@ $.bib.clearEntityData = function(target)
         if (element.getAttribute('bib-dataField')) {
             switch (element.type) {
                 case 'checkbox':
+                case 'radio':
                     element.checked = element.hasAttribute('bib-defaultChecked')
                     break;
                 default:
@@ -246,6 +257,11 @@ $.bib.setEntityData = function(target, data, error)
                         element.checked = false;
                     }
                     break;
+                case 'radio':
+                    if (data[field] === element.value) {
+                        element.checked = true;
+                    }
+                    break;
                 default:
                     element.value = data[field];
             }
@@ -287,6 +303,11 @@ $.bib.getEntityData = function(target)
                         data[field] = 1;
                     } else {
                         data[field] = 0;
+                    }
+                    break;
+                case 'radio':
+                    if (element.checked) {
+                        data[field] = element.value;
                     }
                     break;
                 default:
