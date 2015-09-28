@@ -27,7 +27,7 @@ $.bib.getEntityRoot = function()
 // find template container
 $.bib.getTemplateRoot = function()
 {
-    document.querySelector('[bib-templateRoot]');
+    return document.querySelector('[bib-templateRoot]');
 };
 
 $.bib.getUID = function()
