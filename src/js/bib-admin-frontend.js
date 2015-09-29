@@ -200,6 +200,9 @@ $.bib.clearEntityData = function(target)
     // set target id
     target.removeAttribute('bib-_id');
 
+    // get revision
+    target.removeAttribute('bib-_rev');
+
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
         if (element.getAttribute('bib-dataField')) {
@@ -252,6 +255,9 @@ $.bib.setEntityData = function(target, data, error)
             target.setAttribute('bib-_id', this.getGUID());
         }
     }
+
+    // set revision
+    target.setAttribute('bib-_rev', data._rev);
 
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
@@ -308,6 +314,11 @@ $.bib.getEntityData = function(target)
         target.setAttribute('bib-_id', this.getGUID());
     }
     data._id = target.getAttribute('bib-_id');
+
+    // get revision
+    if (!target.getAttribute('bib-_rev')) {
+        data._rev = target.getAttribute('bib-_rev');
+    }
 
     // get inputs
     for (i = 0; element = inputs[i++]; ) {
