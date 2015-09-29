@@ -38,12 +38,11 @@ $.bib.getUID = function()
 $.bib.getGUID = function()
 {
     var d = Date.now();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = (d + Math.random()*16)%16 | 0;
         d = Math.floor(d/16);
         return (c=='x' ? r : (r&0x3|0x8)).toString(16);
     });
-    return uuid;
 };
 
 $.bib.addEntity = function(entity, error)
@@ -113,7 +112,7 @@ $.bib.updateEntity = function(entity, error)
     // find target
     if (entity.hasOwnProperty('_id') && entity._id) {
         // find by entity id
-        target = document.getElementById(entity._id);
+        target = this.getEntityRoot().querySelector('[bib-_id=' + entity._id + ']');
         err  = 'could not find target for entity id : ' + entity._id;
     } if (entity.hasOwnProperty('type')  && entity.type) {
     // find first empty entity target
@@ -188,9 +187,6 @@ $.bib.replyHandler = function(data, status)
 
 $.bib.clearEntityData = function(target)
 {
-    if ('string' === typeof target) {
-        target = document.getElementById(target);
-    }
     if (!target) {
         throw new Error('invalid entity target');
     }
@@ -202,7 +198,7 @@ $.bib.clearEntityData = function(target)
     var inputs = target.querySelectorAll('[bib-dataField]');
 
     // set target id
-    target.removeAttribute('id');
+    target.removeAttribute('bib-_id');
 
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
@@ -238,9 +234,6 @@ $.bib.clearEntityData = function(target)
 
 $.bib.setEntityData = function(target, data, error)
 {
-    if ('string' === typeof target) {
-        target = document.getElementById(target);
-    }
     if (!target) {
         throw new Error('invalid entity target');
     }
@@ -252,11 +245,11 @@ $.bib.setEntityData = function(target, data, error)
     var inputs = target.querySelectorAll('[bib-dataField]');
 
     // set target id
-    if (!target.id) {
+    if (!target.getAttribute('bib-_id')) {
         if (data.hasOwnProperty('_id') && data._id) {
-            target.id = data._id;
+            target.setAttribute('bib-_id', data._id);
         } else {
-            target.id = this.getGUID();
+            target.setAttribute('bib-_id', this.getGUID());
         }
     }
 
@@ -300,9 +293,6 @@ $.bib.setEntityData = function(target, data, error)
 
 $.bib.getEntityData = function(target)
 {
-    if ('string' === typeof target) {
-        target = document.getElementById(target);
-    }
     if (!target) {
         throw new Error('invalid entity target');
     }
@@ -314,10 +304,10 @@ $.bib.getEntityData = function(target)
     var data   = {};
 
     // get id
-    if (!target.id) {
-        target.id = this.getGUID();
+    if (!target.getAttribute('bib-_id')) {
+        target.setAttribute('bib-_id', this.getGUID());
     }
-    data._id = target.id;
+    data._id = target.getAttribute('bib-_id');
 
     // get inputs
     for (i = 0; element = inputs[i++]; ) {
