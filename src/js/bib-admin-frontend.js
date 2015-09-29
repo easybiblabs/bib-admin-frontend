@@ -198,7 +198,8 @@ $.bib.clearEntityData = function(target)
     var i;
     var id;
     var element;
-    var inputs = target.querySelectorAll('input');
+    var value;
+    var inputs = target.querySelectorAll('[bib-dataField]');
 
     // set target id
     target.removeAttribute('id');
@@ -206,13 +207,27 @@ $.bib.clearEntityData = function(target)
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
         if (element.getAttribute('bib-dataField')) {
-            switch (element.type) {
-                case 'checkbox':
-                case 'radio':
-                    element.checked = element.hasAttribute('bib-defaultChecked')
+            value = element.getAttribute('bib-defaultValue') || '';
+            switch (element.tagName.toLowerCase()) {
+                case 'input':
+                    switch (element.type) {
+                        case 'checkbox':
+                        case 'radio':
+                            element.checked = element.hasAttribute('bib-defaultChecked');
+                            break;
+                        default:
+                            element.value = value;
+                    }
+                    break;
+                case 'textarea':
+                    element.value = value;
+                    break;
+                case 'image':
+                case 'iframe':
+                    element.src = value;
                     break;
                 default:
-                    element.value = '';
+                    element.innerHTML = value;
             }
         }
     }
@@ -234,7 +249,7 @@ $.bib.setEntityData = function(target, data, error)
     var id;
     var element;
     var field;
-    var inputs = target.querySelectorAll('input');
+    var inputs = target.querySelectorAll('[bib-dataField]');
 
     // set target id
     if (!target.id) {
@@ -249,21 +264,32 @@ $.bib.setEntityData = function(target, data, error)
     for (i = 0; element = inputs[i++]; ) {
         field = element.getAttribute('bib-dataField');
         if (field && data.hasOwnProperty(field)) {
-            switch (element.type) {
-                case 'checkbox':
-                    if (data[field]) {
-                        element.checked = true;
-                    } else {
-                        element.checked = false;
+            switch (element.tagName.toLowerCase()) {
+                case 'input':
+                    switch
+                        (element.type)
+                    {
+                    case 'checkbox':
+                        element.checked = ((data[field]) ? 'checked' : false);
+                        break;
+                    case 'radio':
+                        if (data[field] === element.value) {
+                            element.checked = true;
+                        }
+                        break;
+                    default:
+                        element.value = data[field];
                     }
                     break;
-                case 'radio':
-                    if (data[field] === element.value) {
-                        element.checked = true;
-                    }
+                case 'textarea':
+                    element.value = data[field];
+                    break;
+                case 'image':
+                case 'iframe':
+                    element.src = data[field];
                     break;
                 default:
-                    element.value = data[field];
+                    element.innerHTML = data[field];
             }
         }
     }
@@ -284,7 +310,7 @@ $.bib.getEntityData = function(target)
     var i;
     var element;
     var field;
-    var inputs = target.querySelectorAll('input');
+    var inputs = target.querySelectorAll('[bib-dataField]');
     var data   = {};
 
     // get id
@@ -297,21 +323,26 @@ $.bib.getEntityData = function(target)
     for (i = 0; element = inputs[i++]; ) {
         field = element.getAttribute('bib-dataField');
         if (field) {
-            switch (element.type) {
-                case 'checkbox':
-                    if (element.checked) {
-                        data[field] = 1;
-                    } else {
-                        data[field] = 0;
+            switch (element.tagName.toLowerCase()) {
+                case 'input':
+                    switch (element.type) {
+                        case 'checkbox':
+                            data[field] = ((element.checked) ? 1 : 0);
+                            break;
+                        case 'radio':
+                            if (element.checked) {
+                                data[field] = element.value;
+                            }
+                            break;
+                        default:
+                            data[field] = element.value;
                     }
                     break;
-                case 'radio':
-                    if (element.checked) {
-                        data[field] = element.value;
-                    }
+                case 'textarea':
+                    data[field] = element.value;
                     break;
                 default:
-                    data[field] = element.value;
+                    // we do not get data values from non-input elements
             }
         }
     }
