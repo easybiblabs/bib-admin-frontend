@@ -67,17 +67,15 @@ $.bib.addEntity = function(entity, error)
 
     // clone template
     var clone    = template.cloneNode(true);
-    var inputs   = clone.querySelectorAll('input');
+    var inputs   = clone.querySelectorAll('[bib-dataField]');
     var labels   = clone.querySelectorAll('label');
 
-    // add prefix to input 'id'
     for (i = 0; element = inputs[i++]; ) {
+        // add prefix to input 'id'
         if (element.id) {
             element.id = prefix + element.id;
         }
-    }
-    // add prefix to input 'name'
-    for (i = 0; element = inputs[i++]; ) {
+        // add prefix to input 'name'
         if (element.getAttribute('name')) {
             element.setAttribute('name', prefix + element.name);
         }
@@ -197,37 +195,35 @@ $.bib.clearEntityData = function(target)
     var value;
     var inputs = target.querySelectorAll('[bib-dataField]');
 
-    // set target id
+    // remove id
     target.removeAttribute('bib-_id');
 
-    // get revision
+    // remove revision
     target.removeAttribute('bib-_rev');
 
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
-        if (element.getAttribute('bib-dataField')) {
-            value = element.getAttribute('bib-defaultValue') || '';
-            switch (element.tagName.toLowerCase()) {
-                case 'input':
-                    switch (element.type) {
-                        case 'checkbox':
-                        case 'radio':
-                            element.checked = element.hasAttribute('bib-defaultChecked');
-                            break;
-                        default:
-                            element.value = value;
-                    }
-                    break;
-                case 'textarea':
-                    element.value = value;
-                    break;
-                case 'image':
-                case 'iframe':
-                    element.src = value;
-                    break;
-                default:
-                    element.innerHTML = value;
-            }
+        value = element.getAttribute('bib-defaultValue') || '';
+        switch (element.tagName.toLowerCase()) {
+            case 'input':
+                switch (element.type) {
+                    case 'checkbox':
+                    case 'radio':
+                        element.checked = element.hasAttribute('bib-defaultChecked');
+                        break;
+                    default:
+                        element.value = value;
+                }
+                break;
+            case 'textarea':
+                element.value = value;
+                break;
+            case 'image':
+            case 'iframe':
+                element.src = value;
+                break;
+            default:
+                element.innerHTML = value;
         }
     }
 
@@ -257,7 +253,9 @@ $.bib.setEntityData = function(target, data, error)
     }
 
     // set revision
-    target.setAttribute('bib-_rev', data._rev);
+    if (data._rev) {
+        target.setAttribute('bib-_rev', data._rev);
+    }
 
     // set inputs
     for (i = 0; element = inputs[i++]; ) {
