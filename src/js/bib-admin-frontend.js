@@ -114,13 +114,13 @@ $.bib.updateEntity = function(entity, error)
         // find by entity id
         target = this.getEntityRoot().querySelector('[bib-_id=' + entity._id + ']');
         err  = 'could not find target for entity id : ' + entity._id;
-    } if (entity.hasOwnProperty('type')  && entity.type) {
-    // find first empty entity target
-    target = this.getEntityRoot().querySelector('[bib-entity=' + entity.type + ']');
-    err  = 'could not find target for entity type : ' + entity.type;
-} else {
-    throw new Error('invalid entity');
-}
+    } else if (entity.hasOwnProperty('type')  && entity.type) {
+        // find first empty entity target
+        target = this.getEntityRoot().querySelector('[bib-entity=' + entity.type + ']');
+        err  = 'could not find target for entity type : ' + entity.type;
+    } else {
+        throw new Error('invalid entity');
+    }
 
     if (!target) {
         throw new Error(err);
