@@ -174,13 +174,35 @@ $.bib.persist = function(target)
     }
 
     // persist it like you stole it
-    $.post(persistURL, data, this.replyHandler);
+    $.post(persistURL, {payload:JSON.stringify(data)}, this.replyHandler);
 };
 
 $.bib.replyHandler = function(data, status)
 {
+    var i;
+    var entity;
+
     console.log(data);
     console.log(status);
+
+    if (data) {
+        // display page error
+        if (data.error) {
+            //TODO!
+        }
+
+        // display page message
+        if (data.message) {
+            //TODO!
+        }
+
+        // set entity data and error states
+        if (data.entities) {
+            for (i = 0; entity = data.entities[i++];) {
+                this.updateEntity(entity.entity, entity.error);
+            }
+        }
+    }
 };
 
 $.bib.clearEntityData = function(target)
