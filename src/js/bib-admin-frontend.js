@@ -139,6 +139,47 @@ $.bib.removeEntity = function(target)
     return target;
 };
 
+$.bib.deleteEntity = function(target)
+{
+    var id;
+    var rev;
+    var type;
+    var deleteURL;
+
+    // find the entity we are inside of
+    if (target) {
+        while (!target.hasAttribute('bib-entity')) {
+            target = target.parentNode;
+        }
+    } else {
+        throw new Error('invalid target');
+    }
+
+    // get id
+    id = target.getAttribute('bib-_id');
+
+    // get revision
+    rev = target.getAttribute('bib-_rev');
+
+    // get type
+    type = target.getAttribute('bib-entity');
+
+    // check if we can delete
+    if (!id || !rev || !type) {
+        throw new Error('entity to be deleted requires id, rev and type');
+    }
+
+    // set URL
+    deleteURL = '/' + type + '/' + id + '?rev=' + rev;
+
+    // kill it with fire
+    $.ajax({
+        url: deleteURL,
+        type: 'DELETE',
+        success: this.replyHandler
+    });
+};
+
 $.bib.persist = function(target)
 {
     var i;
