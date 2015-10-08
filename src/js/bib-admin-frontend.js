@@ -105,23 +105,37 @@ $.bib.addEntity = function(entity, error)
 $.bib.updateEntity = function(entity, error)
 {
     var target;
-    var err;
 
-    // find target
-    if (entity.hasOwnProperty('_id') && entity._id) {
-        // find by entity id
-        target = this.getEntityRoot().querySelector('[bib-_id=' + entity._id + ']');
-        err  = 'could not find target for entity id : ' + entity._id;
-    } else if (entity.hasOwnProperty('type')  && entity.type) {
-        // find first empty entity target
-        target = this.getEntityRoot().querySelector('[bib-entity=' + entity.type + ']');
-        err  = 'could not find target for entity type : ' + entity.type;
-    } else {
-        throw new Error('invalid entity');
+    if (!entity._id) {
+        throw new Error('invalid entity (missing id)');
     }
 
+    // find target by entity id
+    target = this.getEntityRoot().querySelector('[bib-_id="' + entity._id + '"]');
     if (!target) {
-        throw new Error(err);
+        throw new Error('could not find target for entity id : ' + entity._id);
+    }
+
+    this.setEntityData(target, entity, error);
+
+    return target;
+};
+
+$.bib.insertEntity = function(entity, error)
+{
+    var target;
+
+    if (!entity.type) {
+        throw new Error('invalid entity (missing type)');
+    }
+
+    // find empty entity target
+    target = this.getEntityRoot().querySelector('[bib-entity=' + entity.type + ']');
+    if (!target) {
+        throw new Error('could not find target for entity type : ' + entity.type);
+    }
+    if (target.getAttribute('bib-_id')) {
+        throw new Error('could not find empty target for entity type : ' + entity.type);
     }
 
     this.setEntityData(target, entity, error);
@@ -163,6 +177,8 @@ $.bib.deleteEntity = function(target)
 
     // get type
     type = target.getAttribute('bib-entity');
+
+    console.log(id, rev, type);
 
     // check if we can delete
     if (!id || !rev || !type) {
@@ -322,7 +338,7 @@ $.bib.setEntityData = function(target, data, error)
             target.setAttribute('bib-_id', this.getGUID());
         }
     }
-
+console.log(data);
     // set revision
     if (data._rev) {
         target.setAttribute('bib-_rev', data._rev);
