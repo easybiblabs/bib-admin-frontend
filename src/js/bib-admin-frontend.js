@@ -237,7 +237,6 @@ $.bib.persist = function(target)
 $.bib.replyHandler = function(data, status)
 {
     var i;
-    var entity;
 
     console.log(data);
     console.log(status);
@@ -255,8 +254,10 @@ $.bib.replyHandler = function(data, status)
 
         // set entity data and error states
         if (data.entities) {
-            for (i = 0; entity = data.entities[i++];) {
-                this.updateEntity(entity.entity, entity.error);
+            for (i in data.entities) {
+                if (data.entities.hasOwnProperty(i)) {
+                    $.bib.updateEntity(data.entities[i].entity, data.entities[i].error);
+                }
             }
         }
 
@@ -338,7 +339,7 @@ $.bib.setEntityData = function(target, data, error)
             target.setAttribute('bib-_id', this.getGUID());
         }
     }
-console.log(data);
+
     // set revision
     if (data._rev) {
         target.setAttribute('bib-_rev', data._rev);
@@ -401,7 +402,7 @@ $.bib.getEntityData = function(target)
     data._id = target.getAttribute('bib-_id');
 
     // get revision
-    if (!target.getAttribute('bib-_rev')) {
+    if (target.getAttribute('bib-_rev')) {
         data._rev = target.getAttribute('bib-_rev');
     }
 
