@@ -202,6 +202,14 @@ $.bib.replyHandler = function(data, status)
                 this.updateEntity(entity.entity, entity.error);
             }
         }
+
+        // update URL
+        if (data.pushState) {
+            window.history.pushState(data.pushState.state, data.pushState.title, data.pushState.url);
+        }
+        if (data.redirectURL) {
+            window.location.href = data.redirectURL;
+        }
     }
 };
 
