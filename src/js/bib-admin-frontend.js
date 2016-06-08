@@ -6,7 +6,7 @@
  * author    : Flame Herbohn
  * email     : flame.herbohn@imagineeasy.com
  * download  : https://github.com/easybiblabs/bib-admin-frontend
- * license   : BSD
+ * license   : Apache-2.0
  */
 //----------------------------------------------------------------------------//
 
